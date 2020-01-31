@@ -6,11 +6,7 @@ Welcome to Computer Networks!. Please modify this README file with the following
 | Assignment               | Completed     |
 | ------------------------ | ------------- |
 | Lab 0                    |     Done      |
-<<<<<<< HEAD
 | Lab 1                    |     Done      |
-=======
-| Lab 1                    | not done yet  |
->>>>>>> 13a7aaaa6c39969ebfbd78c558adb4e54c34c126
 | Lab 2                    | not done yet  |
 | Lab 3                    | not done yet  |
 | Lab 4                    | not done yet  |
