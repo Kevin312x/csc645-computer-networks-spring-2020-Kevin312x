@@ -5,8 +5,8 @@ Welcome to Computer Networks!. Please modify this README file with the following
 
 | Assignment               | Completed     |
 | ------------------------ | ------------- |
-| Lab 0                    | not done yet  |
-| Lab 1                    | not done yet  |
+| Lab 0                    |     Done      |
+| Lab 1                    |     Done      |
 | Lab 2                    | not done yet  |
 | Lab 3                    | not done yet  |
 | Lab 4                    | not done yet  |
