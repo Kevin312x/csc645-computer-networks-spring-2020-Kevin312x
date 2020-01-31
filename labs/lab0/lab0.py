@@ -3,9 +3,9 @@
 # Date: 02/03/2020
 # Lab0: Getting Started with Python
 # Goal: Learning the basics of Python
-# Student Name:
-# Student ID:
-# Student Github Username:
+# Student Name: Kevin Huynh
+# Student ID: 916307020
+# Student Github Username: Kevin312x
 # Instructions: Complete the TODO sections for each problem
 # Guidelines: Read each problem carefully, and implement them correctly. Grade is based on lab correctness/completeness
 #               No partial credit will be given. Labs #0 and #1 must be submitted by Monday Feb 3rd at 7:00 pm
@@ -20,9 +20,9 @@ Name: Jose
 SID: 91744100
 Github Username:
 """
-name = "" # TODO: your name
-SID = 000000000 # TODO: your student id
-git_username = "" # TODO: your github username
+name = "Kevin Huynh" # TODO: your name
+SID = 916307020 # TODO: your student id
+git_username = "Kevin312x" # TODO: your github username
 print(name)
 print(SID)
 print(git_username)
@@ -43,6 +43,10 @@ Result is 1002
 print("Problem 1 ********************") # problem header (don't modify)
 # TODO: your code here
 
+first_integer = input("Enter the first integer: ")
+second_integer = input("Enter the second integer: ")
+sum = int(first_integer) + int(second_integer)
+print("Result is " + str(sum))
 
 ########################## Problem 2: String Processing ##############################################################
 """
@@ -58,7 +62,14 @@ myString = "Alice and Bob go to the same school. They learned today in class how
            "infestation, and Alice found the lecture really interesting"
 # TODO: your code here
 
+count = 0
+arr = myString.split()
 
+for word in arr:
+    if word == 'Alice':
+        count = count + 1
+        
+print("Alice appeared " + str(count) + " times.")
 
 ########################## Problem 3: Loops ############################################################################
 """
@@ -70,6 +81,15 @@ Outputs: 5, 15, 34, 56, 120, 178, 190.
 print("Problem 3 ********************") # problem header (don't modify)
 numbers = [5, 10, 24, 32, 88, 90, 100]
 # TODO: your code here
+
+numbers = [0] + numbers
+for x in range(len(numbers)-1):
+    sum = numbers[x] + numbers[x+1]
+
+    if x != len(numbers)-2:
+        print(sum, end=", ")
+    else:
+        print(sum)
 
 ########################## Problem 4: Functions/Methods/Lists ##########################################################
 """
@@ -83,6 +103,15 @@ print("Problem 4 ********************") # problem header (don't modify)
 def merge_odds(l1, l2):
     odds = []
     # TODO: your code here
+    for num in l1:
+        if num%2 == 1:
+            odds.append(num)
+
+    for num in l2:
+        if num%2 == 1:
+            odds.append(num)
+
+    odds.sort()
     return odds
 l1 = [2,1,5,7,9]
 l2 = [32,33,13]
@@ -101,6 +130,24 @@ print("Problem 5 ********************") # problem header
 def merge_odds(l1, l2):
     odds = {}
     # TODO: your code here
+    for num in l1:
+        if num%2 == 0:
+            l1.remove(num)
+
+    for num in l2:
+        if num%2 == 0:
+            l2.remove(num)
+
+    max_elem = max(len(l1), len(l2))
+
+    for x in range(max_elem):
+        if x < len(l1) and x < len(l2):
+            odds.update({x+1 : [l1[x], l2[x]]})
+        elif x >= len(l1):
+            odds.update({x+1 : [l2[x]]})
+        else:
+            odds.update({x+1 : [l1[x]]})
+
     return odds
 l1 = [2,1,5,7,9]
 l2 = [32,33,13]
