@@ -1,12 +1,16 @@
 # CSC645 Spring 2020 Computer Networks
 Welcome to Computer Networks!. Please modify this README file with the following info: 
-1. Your name, and student id here
+1. Kevin Huynh, 916307020
 2. Update this table of assignments. Set to done after one of the assignments is completed:
 
 | Assignment               | Completed     |
 | ------------------------ | ------------- |
 | Lab 0                    |     Done      |
+<<<<<<< HEAD
 | Lab 1                    |     Done      |
+=======
+| Lab 1                    | not done yet  |
+>>>>>>> 13a7aaaa6c39969ebfbd78c558adb4e54c34c126
 | Lab 2                    | not done yet  |
 | Lab 3                    | not done yet  |
 | Lab 4                    | not done yet  |
