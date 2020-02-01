@@ -8,3 +8,5 @@ passing grade in this lab, your code must pass all the unit tests provided.
 Do not modify the unit tests provided. Modifying or hardcoding unit tests will be penalized with a bad grade in this lab. 
 
 ## Note: This is a take home lab. This lab is due on Feb 03 before class. 
+
+Python Version: 3.6.6
