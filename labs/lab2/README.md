@@ -1,3 +1,5 @@
+Python 3.6.9
+
 # Lab #2: TCP Client Socket 
 Please read this README file before class and use this as a reference during the lab session. 
 

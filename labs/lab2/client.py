@@ -30,9 +30,9 @@ class Client(object):
         """
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_id = None
-        self.student_name = None # TODO: your name
-        self.github_username = None # TODO: your username
-        self.sid = 0 # TODO: your student id
+        self.student_name = 'Kevin Huynh' # TODO: your name
+        self.github_username = 'kevin312x' # TODO: your username
+        self.sid = 916307020 # TODO: your student id
 
     def connect(self, server_ip_address, server_port):
         """
@@ -42,15 +42,15 @@ class Client(object):
         :return:
         """
         #TODO: 1. use the client socket implement a connection from this client to the server using the server ip and port
-
+        self.client.connect((server_ip_address, server_port))
         #TODO: 2. once the client creates a succesful connection the server will send the client id to this client.
         #      call the method set_client_id() to implement that functionality.
-
+        self.set_client_id()
         # data dictionary already created for you. Don't modify.
         data = {'student_name': self.student_name, 'github_username': self.github_username, 'sid': self.sid}
 
         #TODO  3. send the above data to the server. using the send method which has been already implemented for you.
-
+        self.send(data)
         while True: # client is put in listening mode to retrieve data from server.
             data = self.receive()
             if not data:
@@ -91,10 +91,11 @@ class Client(object):
         TODO: close this client
         :return: VOID
         """
+        self.client.close()
 # main execution
 if __name__ == '__main__':
-    server_ip_address = "127.0.0.1"  # TODO: change this to the server ip address provided by instructor in class
-    server_port = 12000
+    server_ip_address = "10.143.97.180"  # TODO: change this to the server ip address provided by instructor in class
+    server_port = 5001
     client = Client()
     client.connect(server_ip_address, server_port)
 
