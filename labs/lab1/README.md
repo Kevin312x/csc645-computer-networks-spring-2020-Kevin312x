@@ -1,3 +1,7 @@
+Grade:
+```
+Passed
+```
 # Basic OOP in Python
 In this lab, your learn the basics of OOP in python. The conceots learned in this lab are really helpful for your projects
 in this class. In this lab, you'll learn how to create classes and how the classes can inherit data from others. 
