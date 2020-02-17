@@ -1,3 +1,8 @@
+Grade:
+```
+Passed
+```
+
 Python 3.6.9
 
 # Lab #2: TCP Client Socket 
