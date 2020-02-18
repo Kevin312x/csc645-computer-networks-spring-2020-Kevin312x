@@ -94,8 +94,8 @@ class Client(object):
         self.client.close()
 # main execution
 if __name__ == '__main__':
-    server_ip_address = "10.143.97.180"  # TODO: change this to the server ip address provided by instructor in class
-    server_port = 5001
+    server_ip_address = "127.0.0.1"  # TODO: change this to the server ip address provided by instructor in class
+    server_port = 12000
     client = Client()
     client.connect(server_ip_address, server_port)
 

@@ -3,15 +3,13 @@
 # Date: 02/03/2020
 # Lab3: TCP Server Socket
 # Goal: Learning Networking in Python with TCP sockets
-# Student Name:
-# Student ID:
-# Student Github Username:
+# Student Name: Kevin Huynh
+# Student ID: 916307020
+# Student Github Username: kevin312x
 # Lab Instructions: No partial credit will be given. Labs must be completed in class, and must be committed to your
 #               personal repository by 9:45 pm.
 # Program Running instructions:
-#               python server.py  # compatible with python version 2
-#               python3 server.py # compatible with python version 3
-#
+#               Version Python 3.6.9
 ########################################################################################################################
 
 # don't modify this imports.
@@ -37,14 +35,15 @@ class Server(object):
         """
         self.host = host
         self.port = port
-        self.serversocket = None # TODO: create the server socket
+        self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # TODO: create the server socket
 
     def _bind(self):
         """
         # TODO: bind host and port to this server socket
         :return: VOID
         """
-        pass #remove this line after implemented.
+        self.serversocket.bind((self.host,self.port))
+        self.serversocket.listen(self.MAX_NUM_CONN)
 
     def _listen(self):
         """
@@ -55,6 +54,7 @@ class Server(object):
         try:
             self._bind()
             # your code here
+            print("Server listening at " + self.host + '/' + str(self.port))
         except:
             self.serversocket.close()
 
@@ -66,9 +66,13 @@ class Server(object):
         """
         while True:
              # TODO: receive data from client
+             self.recieve_data = self.receive(clienthandler)
+             if not self.recieve_data:
+                 break
+             else:
+                 print("Server got the data")
              # TODO: if no data, break the loop
              # TODO: Otherwise, send acknowledge to client. (i.e a message saying 'server got the data
-             pass  # remove this line after implemented.
 
     def _accept_clients(self):
         """
@@ -80,10 +84,11 @@ class Server(object):
                clienthandler, addr = self.serversocket.accept()
                # TODO: from the addr variable, extract the client id assigned to the client
                # TODO: send assigned id to the new client. hint: call the send_clientid(..) method
+               self._send_clientid(clienthandler, addr[1])
                self._handler(clienthandler) # receive, process, send response to client.
             except:
                # handle exceptions here
-               pass #remove this line after implemented.
+               raise  #remove this line after implemented.
 
     def _send_clientid(self, clienthandler, clientid):
         """
@@ -92,7 +97,7 @@ class Server(object):
         :param clientid:
         :return: VOID
         """
-        pass  # remove this line after implemented.
+        self.send(clienthandler, clientid)
 
 
     def send(self, clienthandler, data):
@@ -103,7 +108,8 @@ class Server(object):
         :param data: raw data (not serialized yet)
         :return: VOID
         """
-        pass #remove this line after implemented.
+        self.serialezed_data = pickle.dumps(data)
+        clienthandler.send(self.serialezed_data)
 
     def receive(self, clienthandler, MAX_ALLOC_MEM=4096):
         """
@@ -111,7 +117,9 @@ class Server(object):
         :param MAX_ALLOC_MEM: default set to 4096
         :return: the deserialized data.
         """
-        return None #change the return value after implemente.
+        self.data_from_client = clienthandler.recv(MAX_ALLOC_MEM)
+        self.serialized_data = pickle.loads(self.data_from_client)
+        return self.serialized_data #change the return value after implemente.
 
     def run(self):
         """
