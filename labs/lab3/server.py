@@ -70,7 +70,7 @@ class Server(object):
              if not self.recieve_data:
                  break
              else:
-                 print("Server got the data")
+                 print(self.recieve_data)
              # TODO: if no data, break the loop
              # TODO: Otherwise, send acknowledge to client. (i.e a message saying 'server got the data
 
@@ -97,7 +97,8 @@ class Server(object):
         :param clientid:
         :return: VOID
         """
-        self.send(clienthandler, clientid)
+        data = {'clientid': clientid}
+        self.send(clienthandler, data)
 
 
     def send(self, clienthandler, data):
@@ -117,8 +118,8 @@ class Server(object):
         :param MAX_ALLOC_MEM: default set to 4096
         :return: the deserialized data.
         """
-        self.data_from_client = clienthandler.recv(MAX_ALLOC_MEM)
-        self.serialized_data = pickle.loads(self.data_from_client)
+        
+        self.serialized_data = pickle.loads(clienthandler.recv(MAX_ALLOC_MEM))
         return self.serialized_data #change the return value after implemente.
 
     def run(self):
