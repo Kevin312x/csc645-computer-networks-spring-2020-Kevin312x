@@ -15,6 +15,8 @@ import socket
 from threading import Thread
 import pickle
 
+from client_handler import ClientHandler
+
 class Server(object):
 
     MAX_NUM_CONN = 10
@@ -29,6 +31,9 @@ class Server(object):
         self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.clients = {} # dictionary of clients handlers objects handling clients. format {clientid:client_handler_object}
         # TODO: bind the socket to a public host, and a well-known port
+        self.ip_address = ip_address
+        self.port = port
+        self.serversocket.bind((self.ip_address, self.port))
 
 
     def _listen(self):
@@ -39,7 +44,11 @@ class Server(object):
         :return: VOID
         """
         #TODO: your code here
-        pass
+        try:
+            self.serversocket.listen(self.MAX_NUM_CONN)
+            print("Listening at " + self.ip_address + '/' + str(self.port))
+        except:
+            self.serversocket.close()
 
 
     def _accept_clients(self):
@@ -50,11 +59,13 @@ class Server(object):
         while True:
             try:
                 #TODO: Accept a client
+                clienthandler, addr = self.serversocket.accept()
                 #TODO: Create a thread of this client using the client_handler_threaded class
-                pass
+                self.clients[addr[1]] = Thread(target=self.client_handler_thread, args=(clienthandler, addr))
+                self.clients[addr[1]].start()
             except:
                 #TODO: Handle exceptions
-                pass
+                raise
 
 
     def send(self, clientsocket, data):
@@ -64,7 +75,8 @@ class Server(object):
         :param data:
         :return:
         """
-        pass
+        self.serialezed_data = pickle.dumps(data)
+        clientsocket.send(self.serialezed_data)
 
 
     def receive(self, clientsocket, MAX_BUFFER_SIZE=4096):
@@ -74,7 +86,9 @@ class Server(object):
         :param MAX_BUFFER_SIZE:
         :return: the deserialized data
         """
-        return None
+        self.serialized_data = pickle.loads(clientsocket.recv(MAX_BUFFER_SIZE))
+        return self.serialized_data
+
 
     def send_client_id(self, clientsocket, id):
         """
@@ -84,6 +98,7 @@ class Server(object):
         """
         clientid = {'clientid': id}
         self.send(clientsocket, clientid)
+        
 
     def client_handler_thread(self, clientsocket, address):
         """
@@ -94,9 +109,8 @@ class Server(object):
         :param address:
         :return: a client handler object.
         """
-        self.send_client_id(clientsocket)
         #TODO: create a new client handler object and return it
-        return None
+        return ClientHandler(self, clientsocket, address)
 
 
     def run(self):

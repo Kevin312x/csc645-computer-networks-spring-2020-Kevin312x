@@ -11,6 +11,10 @@
 ########################################################################
 import socket
 import pickle
+import sys
+import os
+sys.path.append(os.path.abspath('../server'))
+import menu
 
 class Client(object):
     """
@@ -32,7 +36,10 @@ class Client(object):
         self.clientid = 0
         
     def get_client_id(self):
-        return self.clientid
+        data = self.receive()
+        client_id = data['clientid']
+        self.client_id = client_id
+        print("Client id " + str(self.client_id) + " assigned by server")
 
     
     def connect(self, host="127.0.0.1", port=12000):
@@ -43,8 +50,19 @@ class Client(object):
         :param port: 
         :return: VOID
         """
-        pass
-		
+        self.host = input("Enter the server IP Address: ")
+        self.port = input("Enter the server port: ")
+        self.name = input("Your id key (i.e your name): ")
+        self.clientSocket.connect((self.host, int(self.port)))
+        self.get_client_id()
+
+        name = {'client_name' : self.name}
+        self.send(name)
+
+        self.get_menu()
+        self.menu.process_user_data()
+        
+        self.close()
 	
     def send(self, data):
         """
@@ -52,7 +70,8 @@ class Client(object):
         :param data:
         :return:
         """
-        pass
+        data = pickle.dumps(data)
+        self.clientSocket.send(data)
 
     def receive(self, MAX_BUFFER_SIZE=4090):
         """
@@ -60,7 +79,8 @@ class Client(object):
         :param MAX_BUFFER_SIZE: Max allowed allocated memory for this data
         :return: the deserialized data.
         """
-        return None
+        self.raw_data = self.clientSocket.recv(MAX_BUFFER_SIZE)
+        return pickle.loads(self.raw_data)
         
 
     def close(self):
@@ -68,9 +88,15 @@ class Client(object):
         TODO: close the client socket
         :return: VOID
         """
-        pass
+        self.clientSocket.close()
 
-		
+	
+    def get_menu(self):
+        data = self.receive()
+        menu = data['menu']
+        self.menu = menu
+        self.menu.set_client(self)
+
 
 if __name__ == '__main__':
     client = Client()

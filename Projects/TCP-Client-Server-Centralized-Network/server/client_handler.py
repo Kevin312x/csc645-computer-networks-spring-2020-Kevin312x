@@ -10,7 +10,8 @@
 #                   Note: Must run the server before the client.
 ########################################################################
 import pickle
-import menu
+import threading
+from menu import Menu
 
 class ClientHandler(object):
     """
@@ -31,6 +32,14 @@ class ClientHandler(object):
         self.clientsocket = clientsocket
         self.server.send_client_id(self.clientsocket, self.client_id)
         self.unreaded_messages = []
+        self.chatroom = None
+        self.server.clients[self.client_id] = self
+
+        client_name = self.server.receive(self.clientsocket)
+        self.name = client_name['client_name']
+
+        self._sendMenu()
+        self.process_options()
 
     def _sendMenu(self):
         """
@@ -49,34 +58,44 @@ class ClientHandler(object):
         In this method, I already implemented the server validation of the option selected.
         :return:
         """
-        data = self.server.receive(self.clientsocket)
-        if 'option_selected' in data.keys() and 1 <= data['option_selected'] <= 6: # validates a valid option selected
-            option = data['option_selected']
-            if option == 1:
-                self._send_user_list()
-            elif option == 2:
-                recipient_id = data['recipient_id']
-                message = data['message']
-                self._save_message(recipient_id, message)
-            elif option == 3:
-                self._send_messages()
-            elif option == 4:
-                room_id = data['room_id']
-                self._create_chat(room_id)
-            elif option == 5:
-                room_id = data['room_id']
-                self._join_chat(room_id)
-            elif option == 6:
-                self._disconnect_from_server()
-        else:
-            print("The option selected is invalid")
+        while True:
+            data = self.server.receive(self.clientsocket)
+            if 'option' in data.keys() and 1 <= data['option'] <= 6: # validates a valid option selected
+                option = data['option']
+                if option == 1:
+                    self._send_user_list()
+                elif option == 2:
+                    recipient_id = data['recipient_id']
+                    message = data['message']
+                    self._save_message(recipient_id, message)
+                elif option == 3:
+                    self._send_messages()
+                elif option == 4:
+                    room_id = data['room_id']
+                    self._create_chat(room_id)
+                elif option == 5:
+                    room_id = data['room_id']
+                    self._join_chat(room_id)
+                elif option == 6:
+                    self._disconnect_from_server()
+                    break
+            else:
+                print("The option selected is invalid")
 
     def _send_user_list(self):
         """
         TODO: send the list of users (clients ids) that are connected to this server.
         :return: VOID
         """
-        return None
+        data = {}
+        clients = ""
+        for obj in self.server.clients:
+            clients += self.server.clients[obj].name + ':' + str(self.server.clients[obj].client_id)
+            clients += ", "
+        
+        data['clients'] = clients[:-2]
+        self.server.send(self.clientsocket, data)
+
 
     def _save_message(self, recipient_id, message):
         """
@@ -85,7 +104,10 @@ class ClientHandler(object):
         :param message:
         :return: VOID
         """
-        pass
+        for obj in self.server.clients:
+            if recipient_id == self.server.clients[obj].client_id:
+                self.server.clients[obj].unreaded_messages.append(message)
+        
 
     def _send_messages(self):
         """
@@ -93,7 +115,11 @@ class ClientHandler(object):
         TODO: make sure to delete the messages from list once the client acknowledges that they were read.
         :return: VOID
         """
-        pass
+        data = {}
+        data['messages'] = '\n'.join(self.unreaded_messages)
+        self.server.send(self.clientsocket, data)
+        self.unreaded_messages = []
+        
 
     def _create_chat(self, room_id):
         """
@@ -101,7 +127,34 @@ class ClientHandler(object):
         :param room_id:
         :return: VOID
         """
-        pass
+        data = {}
+        flag = True
+        for obj in self.server.clients:
+            if self.server.clients[obj].chatroom != None and self.server.clients[obj].chatroom.room_id == room_id:
+                flag = False
+
+        if flag == True:
+            self.chatroom = Chatroom(self.client_id, room_id)
+            data['created'] = True
+            data['room_id'] = room_id
+            data['chatroom'] = self.chatroom
+            self.server.send(self.clientsocket, data)
+        else:
+            data['created'] = False
+            self.server.send(self.clientsocket, data)
+
+        while self.chatroom != None:
+            msg = self.server.receive(self.clientsocket)
+            if not msg:
+                break
+            sender_id = msg['sender_id']
+            message = msg['message']
+            room_id = msg['chatroom_id']
+            self.process_chat_messages(sender_id, message, room_id)
+            if 'exit' in message.lower():
+                self.chatroom = None
+                break
+        
 
     def _join_chat(self, room_id):
         """
@@ -109,31 +162,78 @@ class ClientHandler(object):
         :param room_id:
         :return: VOID
         """
-        pass
+        data = {}
+        flag = False
+        chatrm = None
+        for obj in self.server.clients:
+            if self.server.clients[obj].chatroom != None and self.server.clients[obj].chatroom.room_id == room_id:
+                flag = True
+                chatrm = self.server.clients[obj].chatroom
+        
+        if flag == True:
+            self.chatroom = chatrm
+            data['joined'] = True
+            data['room_id'] = room_id
+            data['chatroom'] = self.chatroom
+            self.server.send(self.clientsocket, data)
+        else:
+            data['joined'] = False
+            self.server.send(self.clientsocket, data)
+
+        while self.chatroom != None:
+            msg = self.server.receive(self.clientsocket)
+            if not msg:
+                break
+            sender_id = msg['sender_id']
+            message = msg['message']
+            room_id = msg['chatroom_id']
+            self.process_chat_messages(sender_id, message, room_id)
+            if 'bye' in message.lower():
+                self.chatroom = None
+                break
+        
 
     def delete_client_data(self):
         """
         TODO: delete all the data related to this client from the server.
         :return: VOID
         """
-        pass
+        for obj in self.server.clients:
+            if self.server.clients[obj].client_id == self.client_id:
+                del self.server.clients[obj]
+                break
 
     def _disconnect_from_server(self):
         """
         TODO: call delete_client_data() method, and then, disconnect this client from the server.
         :return: VOID
         """
-        pass
+        self.delete_client_data()
+        data = {}
+        data['close'] = True
+        self.server.send(self.clientsocket, data)
 
 
+    def process_chat_messages(self, sender_id, message, room_id):
+        for obj in self.server.clients:
+            if self.server.clients[obj].chatroom != None:
+                if self.server.clients[obj].chatroom.room_id == room_id:
+                    data = {}
+                    if self.server.clients[obj].client_id == sender_id:
+                        data['self'] = True
+                    else:
+                        data['self'] = False
+                    if self.server.clients[obj].chatroom.owner_id == self.client_id:
+                        data['status'] = 'owner'
+                    else:
+                        data['status'] = 'user'
+                    data['messages'] = message
+                    self.server.send(self.server.clients[obj].clientsocket, data)
 
 
+class Chatroom(object):
 
-
-
-
-
-
-
-
-
+    def __init__(self, owner_id, room_id):
+        self.owner_id = owner_id
+        self.room_id = room_id
+        self.users = [owner_id]
