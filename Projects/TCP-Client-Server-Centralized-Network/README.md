@@ -2,12 +2,12 @@
 
 Please use this README file to provide the following documentation for this project:
 
-* Your name and student id
-* General description of the project (a few sentences)
-* If you used external Python modules/libraries. Provide a requeriments.txt file  
-* Python version and compatibility issues (if any). Your project must be run exactelly as in the running instructions described below in this file
+* Kevin Huynh, 916307020
+* A client-server network in which multiple clients can connect to the server and send messages, both in real-time and not.
+* No external Python modules or libraries were used.
+* Python Version 3.6.9
 * Attach screenshots or videos to this file to ilustrate how your program works for all the options in the menu. 
-* A few sentences about all the challenges you found during the implementation of this project and how you overcame them. Please be honest here. 
+* My first challenge was sending the Menu object over to the client side. I overcame this by importing sys and appending the server directory to the search path. Another challenge I had was how to send and receive and the same time when inside the chatroom. To overcome this, I had to make a thread to receive while the parent would be the one sending.
 
 ## Note that failure to provide the above docs will result in a 30% deduction in your final grade for this project. 
 
