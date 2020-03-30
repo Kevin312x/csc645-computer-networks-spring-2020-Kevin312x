@@ -104,9 +104,7 @@ class ClientHandler(object):
         :param message:
         :return: VOID
         """
-        for obj in self.server.clients:
-            if recipient_id == self.server.clients[obj].client_id:
-                self.server.clients[obj].unreaded_messages.append(message)
+        self.server.clients[recipient_id].unreaded_messages.append(message)
         
 
     def _send_messages(self):

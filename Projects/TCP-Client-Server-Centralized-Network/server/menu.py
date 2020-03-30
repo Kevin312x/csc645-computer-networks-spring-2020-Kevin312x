@@ -81,7 +81,7 @@ class Menu(object):
                     created = self.client.receive()
                     status = created['created']
                     if status == True:
-                        chatroom = created['chatroom']
+                        self.chatroom = created['chatroom']
                         user_status = 'owner'
                         print("-----------------------", "Chat Room" , data['room_id'], "------------------------")
                         print("Type 'exit' to close the chat room")
@@ -99,7 +99,7 @@ class Menu(object):
                             message = self.client.name + '> ' + message
                             input_data['message'] = message
                             input_data['sender_id'] = self.client.client_id
-                            input_data['chatroom_id'] = chatroom.room_id
+                            input_data['chatroom_id'] = self.chatroom.room_id
                             self.client.send(input_data)
                             lock.release()
                             if 'exit' in message.lower():
@@ -117,27 +117,28 @@ class Menu(object):
                     status = joined['joined']
 
                     if status == True:
-                        chatroom = joined['chatroom']
+                        self.chatroom = joined['chatroom']
                         user_status = 'user'
+                        loop = True
                         print("-----------------------", "Chat Room" , joined['room_id'], "------------------------")
                         print("Joined to chat room", joined['room_id'])
                         print("Type 'bye' to exit this chat room")
                         data = {}
                         data['sender_id'] = self.client.client_id
                         data['message'] = self.client.name + " joined"
-                        data['chatroom_id'] = chatroom.room_id
+                        data['chatroom_id'] = self.chatroom.room_id
                         self.client.send(data)
 
                         recv_thread = threading.Thread(target=self.recv, args=(user_status,))
                         recv_thread.start()
 
-                        while True:
+                        while loop:
                             input_data = {}
                             message = input()
                             message = self.client.name + '> ' + message
                             input_data['message'] = message
                             input_data['sender_id'] = self.client.client_id
-                            input_data['chatroom_id'] = chatroom.room_id
+                            input_data['chatroom_id'] = self.chatroom.room_id
                             self.client.send(input_data)
                             if 'bye' in message.lower():
                                 stop_thread = True
