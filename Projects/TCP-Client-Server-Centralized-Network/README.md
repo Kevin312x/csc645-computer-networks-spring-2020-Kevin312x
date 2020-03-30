@@ -7,6 +7,12 @@ Please use this README file to provide the following documentation for this proj
 * No external Python modules or libraries were used.
 * Python Version 3.6.9
 * Attach screenshots or videos to this file to ilustrate how your program works for all the options in the menu. 
+<img src="images/option1.png" height=100>
+<img src="images/option2.png" height=100>
+<img src="images/option3.png" height=100>
+<img src="images/option4.png" height=100>
+<img src="images/option5.png" height=100>
+<img src="images/option6.png" height=100>
 * My first challenge was sending the Menu object over to the client side. I overcame this by importing sys and appending the server directory to the search path. Another challenge I had was how to send and receive and the same time when inside the chatroom. To overcome this, I had to make a thread to receive while the parent would be the one sending.
 
 ## Note that failure to provide the above docs will result in a 30% deduction in your final grade for this project. 
