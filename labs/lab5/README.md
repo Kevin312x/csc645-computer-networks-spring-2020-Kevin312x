@@ -93,13 +93,4 @@ best guess to solve this problem. You won't be penalized if you do not know the 
 you don't even try to provide an answer. 
 
 ### Your answer here
-
-
-
-
- 
-
-
-
-
-
+Since each client socket can only connect to one server, we just have to create multiple client objects and bind them to different ports. Since sockets are composed of an ip address and a port number, we can just use different port numbers for each client to create different client sockets. Then, we are able to connect to multiple servers, one for each client socket.
