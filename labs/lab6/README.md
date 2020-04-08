@@ -17,8 +17,6 @@ In this lab, your work is to explain in a few sentences how to make a trackerles
 
 ### Your response here. 
 
-
-
-
+To make it trackerless, we have to implement a hash table. If the client wants to download a torrent, then the client would have to consult the hash table to get a list of seeders in which the client can download from.
 
 
