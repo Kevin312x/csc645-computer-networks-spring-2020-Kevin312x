@@ -12,7 +12,7 @@ Welcome to Computer Networks!. Please modify this README file with the following
 | Lab 4                    |     Done      |
 | Lab 5                    |     Done      |
 | Lab 6                    |     Done      |
-| Lab 7                    | not done yet  |
+| Lab 7                    |     Done      |
 | Lab 8                    | not done yet  |
 | Lab 9                    | not done yet  |
 | TCP Client/Server Network|     Done      |
