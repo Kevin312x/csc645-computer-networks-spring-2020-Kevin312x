@@ -5,30 +5,28 @@ A basic template structure is provided, but you may need to implement more metho
 For example, the payload method depending of the option selected
 """
 
+from message import Message
+
 class PWP(object):
     # pstr and pstrlen constants used by the handshake process
     PSTR = "BitTorrent protocol"
     PSTRLEN = 19
     # TODO: Define ID constants for all the message fields such as unchoked, interested....
-    X_BITFIELD_LENGTH = b'0000'
-    X_PIECE_LENGTH = b'0000'
-
+    choke = 0
+    unchoke = 1
+    interested = 2
+    not_interested = 3
+    have = 4
+    bitfield = 5
+    request = 6
+    piece = 7
+    cancel = 8
 
     def __init__(self):
         """
         Empty constructor
         """
-        self.keep_alive = {'len': b'0000'}
-        self.choke = {'len': b'0001', 'id': 0}
-        self.unchoke = {'len': b'0001', 'id': 1}
-        self.interested = {'len': b'0001', 'id': 2}
-        self.not_interested = {'len': b'0001', 'id':3}
-        self.have = {'len': b'0005', 'id': 4, 'piece_index': None}
-        self._bitfield = {'len': b'0013' + self.X_BITFIELD_LENGTH, 'id': 5, 'bitfield': []}
-        self.request = {'len': b'0013', 'id': 6, 'index': None, 'begin': None, 'length': None}
-        self.piece = {'len': b'0009' + self.X_PIECE_LENGTH, 'id': 7, 'index': None, 'begin': None, 'block': None}
-        self.cancel = {'len': b'0013', 'id': 8, 'index': None, 'begin': None, 'length': None}
-
+        self.message = Message()
 
     def handshake(self, info_hash, peer_id, pstrlen=PSTRLEN, pstr=PSTR):
         """
@@ -36,7 +34,7 @@ class PWP(object):
         :param options:
         :return: the handshake message
         """
-        return (chr(pstrlen)).encode('utf-8') + pstr.encode('utf-8') + b'00000000' + info_hash + peer_id
+        return (chr(pstrlen) + pstr + (8 * chr(0)) + info_hash + peer_id).encode('utf-8')
 
     def message(self, len, message_id, payload):
         """
@@ -46,20 +44,24 @@ class PWP(object):
         :param payload:
         :return: the message
         """
-        return len + (chr(message_id)).encode('utf-8') + self.payload(id)
+        return (len + chr(message_id) + self.payload(id)).encode('utf-8')
 
     def payload(self, message_id):
-        if(message_id < 4):
-            return b''
-        elif(message_id == 4):
-            return (chr(have['piece_index'])).encode('utf-8')
-        elif(message_id == 5):
-            bits = ""
-            for i in _bitfield['bitfield']:
+        if(message_id == self.have):
+            return (self.message.chr(have['piece_index'])).encode('utf-8')
+        
+        elif(message_id == self.bitfield):
+            bits = ''
+            for i in self.message._bitfield['bitfield']:
                 bits += ''.join(str(j) for j in i)
             
             return bits.encode('utf-8')
-        elif(message_id == 6 or message_id == 8):
-            return (chr(request['index'])).encode('utf-8') + (chr(request['begin'])).encode('utf-8') + (chr(request['length'])).encode('utf-8')
-        elif(message_id == 7):
-            return (chr(piece['index'])).encode('utf-8') + (chr(piece['begin'])).encode('utf-8') + (chr(piece['block'])).encode('utf-8')
+        
+        elif(message_id == self.request or message_id == self.cancel):
+            return chr(self.message.request['index']) + chr(self.message.request['begin']) + chr(self.message.request['length'])
+        
+        elif(message_id == self.piece):
+            return chr(self.message.piece['index']) + chr(self.message.piece['begin']) + chr(self.message.piece['block'])
+        
+        else:
+            return ''
