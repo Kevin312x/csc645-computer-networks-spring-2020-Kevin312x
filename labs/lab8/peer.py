@@ -8,6 +8,8 @@ and uploading process in the network, and also which challenges you may encounte
 when implementing those functionalities. 
 """
 from server import Server
+from threading import Thread
+
 class Peer (Server):
 
     SERVER_PORT = 5000
@@ -38,9 +40,12 @@ class Peer (Server):
         :return: VOID
         """
         try:
-            pass # your code here
+            client = Client()
+            client.bind('127.0.0.1', client_port_to_bind)
+            client.connect(peer_ip_address, SERVER_PORT)
+            client.recv()
         except:
-            pass # handle exceptions here
+            return
 
     def connect(self, peers_ip_addresses):
         """
@@ -53,5 +58,10 @@ class Peer (Server):
         :param peers: list of peer´s ip addresses in the network
         :return: VOID
         """
-        pass # your code here
+        for ip in peers_ip_addresses:
+            if CLIENT_MIN_PORT_RANGE == CLIENT_MAX_PORT_RANGE:
+                break
+            Thread(target=self._connect_to_peer, args=(port, ip)).start()
+            CLIENT_MIN_PORT_RANGE += 1
+        
 

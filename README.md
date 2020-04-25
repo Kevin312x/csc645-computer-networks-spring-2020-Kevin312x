@@ -13,7 +13,7 @@ Welcome to Computer Networks!. Please modify this README file with the following
 | Lab 5                    |     Done      |
 | Lab 6                    |     Done      |
 | Lab 7                    |     Done      |
-| Lab 8                    | not done yet  |
+| Lab 8                    |     Done      |
 | Lab 9                    | not done yet  |
 | TCP Client/Server Network|     Done      |
 | P2P Decentralized Network| not done yet  |
