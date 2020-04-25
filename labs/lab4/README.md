@@ -1,3 +1,22 @@
+Grader Comments:
+```
+Unable to run server.py
+Traceback (most recent call last):
+  File "server.py", line 134, in <module>
+    server.run()
+  File "server.py", line 129, in run
+    self._accept_clients()
+  File "server.py", line 79, in _accept_clients
+    clienthandler, addr = self.serversocket.accept()
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/socket.py", line 292, in accept
+    fd, addr = self._accept()
+OSError: [Errno 9] Bad file descriptor
+```
+Grade:
+```
+Not Passed
+```
+
 # Lab #4: Threading clients in server side 
 Please read this README file before class and use this as a reference during the lab session. 
 
