@@ -6,6 +6,7 @@ For example, the payload method depending of the option selected
 """
 
 from message import Message
+import bencode
 
 class PWP(object):
     # pstr and pstrlen constants used by the handshake process
@@ -27,6 +28,7 @@ class PWP(object):
         Empty constructor
         """
         self.message = Message()
+        self.message.init_bitfield(num_pieces)
 
     def handshake(self, info_hash, peer_id, pstrlen=PSTRLEN, pstr=PSTR):
         """
@@ -34,7 +36,7 @@ class PWP(object):
         :param options:
         :return: the handshake message
         """
-        return (chr(pstrlen) + pstr + (8 * chr(0)) + info_hash + peer_id).encode('utf-8')
+        return bencode.encode(chr(pstrlen) + pstr + (8 * chr(0)) + info_hash + peer_id)
 
     def message(self, len, message_id, payload):
         """
@@ -44,18 +46,18 @@ class PWP(object):
         :param payload:
         :return: the message
         """
-        return (len + chr(message_id) + self.payload(id)).encode('utf-8')
+        return bencode.encode(len + chr(message_id) + self.payload(id))
 
     def payload(self, message_id):
         if(message_id == self.have):
-            return (self.message.chr(have['piece_index'])).encode('utf-8')
+            return (self.message.chr(have['piece_index']))
         
         elif(message_id == self.bitfield):
             bits = ''
             for i in self.message._bitfield['bitfield']:
                 bits += ''.join(str(j) for j in i)
             
-            return bits.encode('utf-8')
+            return bencode.encode(bits)
         
         elif(message_id == self.request or message_id == self.cancel):
             return chr(self.message.request['index']) + chr(self.message.request['begin']) + chr(self.message.request['length'])
