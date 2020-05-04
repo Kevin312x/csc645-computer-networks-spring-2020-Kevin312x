@@ -127,7 +127,7 @@ class Peer(Server):
 
     def routing_del(self, piece, file_id, swarm_id):
         for route in self.ROUTING_TABLE:
-            if route['swarm_id'] = swarm_id and route['file_id'] = file_id and route['piece'] = piece:
+            if route['swarm_id'] == swarm_id and route['file_id'] == file_id and route['piece'] == piece:
                 self.ROUTING_TABLE.delete(route)
 
 # testing
