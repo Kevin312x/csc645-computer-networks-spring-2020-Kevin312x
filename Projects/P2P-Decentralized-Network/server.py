@@ -3,121 +3,147 @@
 # Date: 02/03/2020
 # Lab3: TCP Server Socket
 # Goal: Learning Networking in Python with TCP sockets
-# Student Name:
-# Student ID:
-# Student Github Username:
-# Lab Instructions: No partial credit will be given. Labs must be completed in class, and must be committed to your
-#               personal repository by 9:45 pm.
-# Program Running instructions:
-#               python server.py  # compatible with python version 2
-#               python3 server.py # compatible with python version 3
-#
+# Student Name: Kevin Huynh
+# Student ID: 916307020
+# Student Github Username: kevin312x
+# Instructions: Read each problem carefully, and implement them correctly. Your grade in labs is based on passing
+#               all the unit tests provided.
+#               The following is an example of output for a program that pass all the unit tests.
+#               Ran 3 tests in 0.000s
+#               OK
+#               No partial credit will be given. Labs are done in class and must be submitted by 9:45 pm on iLearn.
 ########################################################################################################################
 
-# don't modify this imports.
-import socket
+######################################### Server Socket ################################################################
+"""
+Create a tcp server socket class that represents all the services provided by a server socket such as listen and accept
+clients, and send/receive data. The signatures method are provided for you to be implemented
+"""
 import pickle
+import socket
+import bencode
 from threading import Thread
 
+import urllib.request
+
+
 class Server(object):
-    """
-    The server class implements a server socket that can handle multiple client connections.
-    It is really important to handle any exceptions that may occur because other clients
-    are using the server too, and they may be unaware of the exceptions occurring. So, the
-    server must not be stopped when a exception occurs. A proper message needs to be show in the
-    server console.
-    """
-    MAX_NUM_CONN = 10 # keeps 10 clients in queue
 
-    def __init__(self, host="127.0.0.1", port = 12000):
-        """
-        Class constructor
-        :param host: by default localhost. Note that '0.0.0.0' takes LAN ip address.
-        :param port: by default 12000
-        """
-        self.host = host
+    def __init__(self, ip_address='127.0.0.1', port=5000):
+        # create an INET, STREAMing socket
+        self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # bind the socket to a public host, and a well-known port
+        self.ip = ip_address
         self.port = port
-        self.serversocket = None # TODO: create the server socket
-
-    def _bind(self):
-        """
-        # TODO: bind host and port to this server socket
-        :return: VOID
-        """
-        pass #remove this line after implemented.
+        self.serversocket.bind((ip_address, port))
 
     def _listen(self):
         """
-        # TODO: puts the server in listening mode.
-        # TODO: if succesful, print the message "Server listening at ip/port"
+        Private method that puts the server in listening mode
+        If successful, prints the string "Listening at <ip>/<port>"
+        i.e "Listening at 127.0.0.1/10000"
         :return: VOID
         """
         try:
-            self._bind()
-            # your code here
-        except:
-            self.serversocket.close()
+            self.serversocket.listen(5)
+            # uncomment the line below to router point of entry ip address
+            # self.ip = urllib.request.urlopen('http://ifconfig.me/ip').read() 
+            print("Listening for new peers at " + str(self.ip) + "/" + str(self.port))
 
-    def _handler(self, clienthandler):
-        """
-        #TODO: receive, process, send response to the client using this handler.
-        :param clienthandler:
-        :return:
-        """
-        while True:
-             # TODO: receive data from client
-             # TODO: if no data, break the loop
-             # TODO: Otherwise, send acknowledge to client. (i.e a message saying 'server got the data
-             pass  # remove this line after implemented.
+        except Exception as error:
+            print(error)
 
     def _accept_clients(self):
         """
-        #TODO: Handle client connections to the server
+        Accept new clients
         :return: VOID
         """
         while True:
             try:
-               clienthandler, addr = self.serversocket.accept()
-               # TODO: from the addr variable, extract the client id assigned to the client
-               # TODO: send assigned id to the new client. hint: call the send_clientid(..) method
-               self._handler(clienthandler) # receive, process, send response to client.
-            except:
-               # handle exceptions here
-               pass #remove this line after implemented.
+                # accept connections from outside
+                (clientsocket, address) = self.serversocket.accept()
+                # now do something with the clientsocket
+                # in this case, we'll pretend this is a threaded server
+                Thread(target=self.client_thread, args=(clientsocket, address)).start()
 
-    def _send_clientid(self, clienthandler, clientid):
-        """
-        # TODO: send the client id to a client that just connected to the server.
-        :param clienthandler:
-        :param clientid:
-        :return: VOID
-        """
-        pass  # remove this line after implemented.
+            except Exception as error:
+                print(error)
 
+    # noinspection PyMethodMayBeStatic
+    def append_to_file(self, data, file="connFile.txt"):
+        f = open(file, "a+")
+        f.write(data)
+        f.write('\n')
+        f.close()
 
-    def send(self, clienthandler, data):
+    # noinspection PyMethodMayBeStatic
+    def _send(self, client_socket, data):
         """
-        # TODO: Serialize the data with pickle.
-        # TODO: call the send method from the clienthandler to send data
-        :param clienthandler: the clienthandler created when connection was accepted
-        :param data: raw data (not serialized yet)
-        :return: VOID
+        :param client_socket:
+        :param data:
+        :return:
         """
-        pass #remove this line after implemented.
+        data = pickle.dumps(data)
+        client_socket.send(data)
 
-    def receive(self, clienthandler, MAX_ALLOC_MEM=4096):
+    # noinspection PyMethodMayBeStatic
+    def _receive(self, client_socket, max_buffer_size=4096):
+        raw_data = client_socket.recv(max_buffer_size)
+        return pickle.loads(raw_data)
+
+    def client_thread(self, clientsocket, address):
         """
-        # TODO: Deserialized the data from client
-        :param MAX_ALLOC_MEM: default set to 4096
-        :return: the deserialized data.
+        Implement in lab4
+        :param clientsocket:
+        :param address:
+        :return:
         """
-        return None #change the return value after implemente.
+        # Receives and sends a handshake
+        data = self._receive(clientsocket)
+        if data['info_hash'] != self.INFO_HASH:
+            print('Info Hash doesn\'t match')
+            return
+        data = self.PWP.handshake(self.INFO_HASH, self.ID)
+        self._send(clientsocket, data)
+        # self.tracker.addPeer(address[0], address[1], clientsocket)
+        # self.tracker.sendPeersIPAddress()
+        # Sends the bitfield to the client.
+        data = self.PWP._message(None, 5)
+        self._send(clientsocket, data)
+        while True:
+            data = self._receive(clientsocket)
+            if not data:
+                break
+            if data['id'] == 0:
+                pass
+            elif data['id'] == 1:
+                pass
+            elif data['id'] == 2:
+                pass
+            elif data['id'] == 3:
+                pass
+            elif data['id'] == 4:
+                pass
+            elif data['id'] == 5:
+                pass
+            elif data['id'] == 6:
+                # Reads from age.txt file to get a specific block, then sends it to client.
+                begin = data['begin']
+                block = data['length']
+                with open('metainfo/age.txt', 'r') as age_file:
+                    age_file.seek(begin + block)
+                    block_read = age_file.read(self.block_length).encode('utf-8')
+                    data = {'id': -1, 'piece': data['index'], 'block': int(block / self.block_length), 'data': block_read}
+                    self._send(clientsocket, data)
+                
+            elif data['id'] == 7:
+                pass
+            elif data['id'] == 8:
+                pass
+            elif data['id'] == 9:
+                pass
 
     def run(self):
-        """
-        Already implemented for you
-        Run the server.
-        :return: VOID
-        """
         self._listen()
         self._accept_clients()

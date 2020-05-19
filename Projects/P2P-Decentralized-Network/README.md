@@ -2,12 +2,19 @@
 
 Please use this README file to provide the following documentation for this project:
 
-* Your name and student id
+* Kevin Huynh, 916307020
 * General description of the project (a few sentences)
+We had to implement a Peer to Peer Bittorrent Client-Server, in which the peer reads the .torrent file and connects to peers/seeders
+to download or upload using Peer Wire Protocol messages.
 * If you used external Python modules/libraries. Provide a requeriments.txt file  
 * Python version and compatibility issues (if any)
+Python 3.6.9
 * Clear and specific instructions about how to run your project. If your project does not run or contains errors, you'll get a 0 in the project no matter how much work you put on it. So, test your code properly and make sure that it runs without errors.
+1. To run the seeder, set the SERVER_PORT in peer.py to 5000.
+2. To run a peer, change the SERVER_PORT to any other one than 5000.
 * A few sentences about all the challenges you found during the implementation of this project and how you overcame them. Please be honest here. 
+One challenge I faced was trying to read the .torrent file, more specifically, it was trying to find out what the sha1 pieces were. I didn't know how many characters of the file were to be hashed to get the first 20 bytes of the info pieces. I had to count the number of bytes in the info pieces to determine how many characters of the file I had to read, which was exactly one piece length (16384).
+Another challenge I faced was the bitfield, or the initialization of the bitfield. I noticed that, when I init the message with the piece length, it would only give a bitarray of 23 pieces of 8 blocks each. I had to modify it to produce a bitarray of 178 pieces with 8 blocks and a spare bitarray with 2 blocks.
 
 ## Note that failure to provide the above docs will result in a 30% deduction in your final grade for this project. 
 
